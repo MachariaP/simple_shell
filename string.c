@@ -6,119 +6,121 @@
  *
  * Return: A pointer to the duplicated string, or NULL on failure.
  */
-char *string_duplicate(const char *str)
+char *_strdup(const char *str)
 {
-    char *duplicate;
-    int i, length = 0;
+    char *ptr;
+    int i, len = 0;
 
     if (str == NULL)
         return NULL;
 
     while (*str != '\0')
     {
-        length++;
+        len++;
         str++;
     }
 
-    str = str - length;
-    duplicate = malloc(sizeof(char) * (length + 1));
-    if (duplicate == NULL)
-        return NULL;
+    str = str - len;
+    ptr = malloc(sizeof(char) * (len + 1));
+    if (ptr == NULL)
+        return (NULL);
 
-    for (i = 0; i <= length; i++)
-        duplicate[i] = str[i];
+    for (i = 0; i <= len; i++)
+        ptr[i] = str[i];
 
-    return duplicate;
+    return (ptr);
 }
 
 /**
- * string_compare - Compares two strings.
+ * _strcmp - Compares two strings.
  * @s1: The first string.
  * @s2: The second string.
  *
  * Return: The result of the comparison (0 if equal, positive/negative otherwise).
  */
-int string_compare(char *s1, char *s2)
+int _strcmp(char *s1, char *s2)
 {
-    int comparison;
+    int cmp;
 
-    comparison = (int)*s1 - (int)*s2;
+    cmp = (int)*s1 - (int)*s2;
+
     while (*s1)
     {
         if (*s1 != *s2)
             break;
+
         s1++;
         s2++;
-        comparison = (int)*s1 - (int)*s2;
+        cmp = (int)*s1 - (int)*s2;
     }
 
-    return comparison;
+    return (cmp);
 }
 
 /**
- * string_length - Calculates the length of a string.
+ * _strlen - Calculates the length of a string.
  * @s: The string.
  *
  * Return: The length of the string.
  */
-int string_length(char *s)
+int _strlen(char *s)
 {
-    int length = 0;
+    int len = 0;
 
-    while (s[length])
-        length++;
+    while (s[len])
+        len++;
 
-    return length;
+    return (len);
 }
 
 /**
- * string_concatenate - Concatenates two strings.
- * @destination: The destination string.
- * @source: The source string.
+ * _strcat - Concatenates two strings.
+ * @dest: The destination string.
+ * @src: The source string.
  *
  * Return: A pointer to the concatenated string.
  */
-char *string_concatenate(char *destination, char *source)
+char *_strcat(char *dest, char *src)
 {
-    char *ptr = destination;
+    char *p = dest;
 
-    if (destination == NULL || source == NULL)
-        return destination;
+    if (dest == NULL || src == NULL)
+        return dest;
 
-    while (*ptr)
-        ptr++;
+    while (*p)
+        p++;
 
-    while (*source)
+    while (*src)
     {
-        *ptr = *source;
-        ptr++;
-        source++;
+        *p = *src;
+        p++;
+        src++;
     }
 
-    *ptr = '\0'; /* add a null terminator at the end */
-    return destination;
+    *p = '\0'; /* add a null terminator at the end */
+    return (dest);
 }
 
 /**
- * string_copy - Copies a string.
- * @destination: The destination string.
- * @source: The source string.
+ * _strcpy - Copies a string.
+ * @dest: The destination string.
+ * @src: The source string.
  *
  * Return: A pointer to the copied string.
  */
-char *string_copy(char *destination, char *source)
+char *_strcpy(char *dest, char *src)
 {
     int i = 0;
 
-    if (destination == NULL || source == NULL)
-        return destination;
+    if (dest == NULL || src == NULL)
+        return dest; /* return dest unchanged if either pointer is NULL */
 
-    while (source[i])
+    while (src[i])
     {
-        destination[i] = source[i];
+        dest[i] = src[i];
         i++;
     }
 
-    destination[i] = '\0'; /* Add null terminator */
-    return destination;
+    dest[i] = '\0'; /* Add null terminator */
+    return dest;
 }
