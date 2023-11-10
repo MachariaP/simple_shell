@@ -12,6 +12,7 @@ int _execute(char **command, char **argv)
         {
             perror(argv[0]);
             free_2D_array(command);
+	    exit(0);
         }
     }
     else
