@@ -74,7 +74,8 @@ int _execute(char **command, char **argv, int idx)
 	}
 	else
 	{
-		/* Child process did not terminate normally */
+		perror("Child process did not terminate normally");
+
 		return -1;
 	}
 }

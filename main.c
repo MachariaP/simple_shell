@@ -6,6 +6,7 @@ int main(int ac, char **argv)
 {
 	char *line = NULL, **command = NULL;
 	int status = 0;
+	int idx = 0;
 	(void)ac;
 
 	while (1)
@@ -23,6 +24,7 @@ int main(int ac, char **argv)
 		if (!command)
 			continue;
 
-		status = _execute(command, argv);
+		status = _execute(command, argv, idx);
+		idx++;
 	}
 }
