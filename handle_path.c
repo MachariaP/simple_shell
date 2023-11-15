@@ -1,5 +1,13 @@
 #include "shell.h"
 
+/**
+ * _getpath - Resolves the full path of a command.
+ * @command: The command to resolve.
+ *
+ * Return: A dynamically allocated string representing the full path,
+ *         or NULL if the command is not found or encounters an error.
+ */
+
 char *_getpath(char *command)
 {
     char *path_env, *full_cmd, *dir;
