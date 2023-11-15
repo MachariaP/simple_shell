@@ -8,36 +8,27 @@
  */
 char *_getenv(char *variable)
 {
-    char *tmp, *key, *value, *env;
-    int i;
+	char *tmp, *key, *value, *env;
+	int i;
 
-    /* Iterate through the environment variables */
-    for (i = 0; environ[i]; i++)
-    {
-        /* Duplicate the current environment variable for tokenization */
-        tmp = _strdup(environ[i]);
+	for (i = 0; environ[i]; i++)
+	{
+		tmp = _strdup(environ[i]);
 
-        /* Tokenize the key (variable name) from the environment variable */
-        key = strtok(tmp, "=");
+		key = strtok(tmp, "=");
 
-        /* Check if the current environment variable's key matches the target variable */
-        if (_strcmp(key, variable) == 0)
-        {
-            /* Tokenize the value of the environment variable */
-            value = strtok(NULL, "\n");
+		if (_strcmp(key, variable) == 0)
+		{
+			value = strtok(NULL, "\n");
 
-            /* Duplicate the value for return */
-            env = _strdup(value);
+			env = _strdup(value);
 
-            /* Free the duplicated environment variable and return the result */
-            free(tmp);
-            return (env);
-        }
+			free(tmp);
+			return (env);
+		}
 
-        /* Free the duplicated environment variable */
-        free(tmp), tmp = NULL;
-    }
+		free(tmp), tmp = NULL;
+	}
 
-    /* Return NULL if the variable is not found in the environment */
-    return (NULL);
+	return (NULL);
 }
