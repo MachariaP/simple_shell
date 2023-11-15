@@ -1,6 +1,6 @@
 #include "shell.h"
 
-char **tokenizer(char *line);
+
 
 int main(int ac, char **argv)
 {
