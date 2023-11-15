@@ -15,10 +15,11 @@
  */
 char *_getpath(char *command)
 {
-    char *path_env = NULL, *full_cmd = NULL, *dir = NULL;
+    char *path_env = _getenv("PATH");
+    char *full_cmd = NULL, *dir = NULL;
     struct stat st;
 
-    if (command == NULL)
+    if (command == NULL || path_env == NULL)
     {
         free(path_env);
         return NULL;
@@ -28,22 +29,19 @@ char *_getpath(char *command)
     if (strchr(command, '/') != NULL)
     {
         if (stat(command, &st) == 0) /* If path exists */
+        {
+            free(path_env);
             return _strdup(command);
+        }
         else
         {
             perror("stat");
+            free(path_env);
             return NULL;
         }
     }
     else
     {
-        /* If the user unset path (can't get directories) */
-        path_env = _getenv("PATH");
-        if (!path_env)
-        {
-            return NULL;
-        }
-
         /* Handle the path */
         dir = strtok(path_env, ":");
         while (dir)
@@ -71,6 +69,7 @@ char *_getpath(char *command)
             }
             else
             {
+                perror("malloc");
                 free(path_env);
                 return NULL;
             }
