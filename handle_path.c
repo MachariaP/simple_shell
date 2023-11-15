@@ -65,6 +65,7 @@ char *_getpath(char *command)
                     return full_cmd;
                 }
 
+                perror("stat");
                 free(full_cmd);
             }
             else
