@@ -76,35 +76,7 @@ char *_itoa(int n)
 	return (_strdup(buffer));
 }
 
-/**
- * convert_to_string - Converts an integer to a string.
- * @n: The integer to be converted.
- *
- * Return: The string representation of the integer.
- */
-char *convert_to_string(int n)
-{
-	char buffer[20];
-	int i = 0;
 
-	/* Handle the case when the integer is 0 */
-	if (n == 0)
-		buffer[i++] = '0';
-	else
-	{
-		/* Convert the integer to a string */
-		while (n > 0)
-		{
-			buffer[i++] = (n % 10) + '0';
-			n /= 10;
-		}
-	}
-
-	buffer[i] = '\0';
-	reverse_string(buffer, i);
-
-	return _strdup(buffer);
-}
 
 /**
  * reverse_string - Reverses a string in place.
