@@ -1,6 +1,11 @@
 #include "shell.h"
 
-
+/**
+ * main - Simple Shell main function
+ * @ac: Count of Arguments
+ * @av: Arguments
+ * Return: 0 Always (success)
+ */
 
 int main(int ac, char **argv)
 {
