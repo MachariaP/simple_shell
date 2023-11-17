@@ -1,0 +1,50 @@
+# Simple Shell - Main Loop
+- Display prompt and wait for user command
+- Repeat until End of File (Ctrl+D)
+  - Read command line
+  - Tokenize command line into command and arguments
+  - Check if command is a built-in
+    - Execute built-in command if true
+  - Search for executable in PATH
+    - Fork a new process
+      - If child process:
+        - Execute command using execve
+      - If parent process:
+        - Wait for child process to finish
+  - If executable not found, display error
+
+# Function to display prompt
+- Display shell prompt (e.g., "#cisfun$")
+
+# Function to read command
+- Read a line of input from the user
+
+# Function to tokenize command line
+- Tokenize command line based on spaces
+- Return command and arguments
+
+# Function to check if command is a built-in
+- Check if command is a built-in (e.g., exit, env, cd, alias)
+
+# Function to execute built-in commands
+- Execute corresponding action for built-in command
+
+# Function to execute an external command
+- Execute command using execve
+- Handle execve failure if applicable
+
+# Function to find executable in PATH
+- Search for command in directories listed in PATH
+- Return executable path if found, else None
+
+# Function to wait for child process
+- Wait for child process to finish
+
+# Function to handle errors during fork
+- Display fork failure error message
+
+# Function to handle errors during execve
+- Display execve failure error message
+
+# Function to exit the shell
+- Perform cleanup and exit
