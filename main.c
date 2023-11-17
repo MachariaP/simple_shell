@@ -38,7 +38,7 @@ int main(int ac, char **argv)
 			handle_builtin(command, argv, &status, idx);
 		else
 			status = _execute(command, argv, idx);
-		freearray2D(command);			
+
 
 
 
