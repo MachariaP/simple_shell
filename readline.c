@@ -19,7 +19,7 @@ char *read_line(void)
     /* Check if an error occurred during input */
     if (n == -1)
     {
-        free(line);    /* Free the allocated memory for the line */
+        perror("getline");
         return (NULL); /* Return NULL to indicate an error or EOF */
     }
 
