@@ -46,8 +46,8 @@ int _execute(char **command, char **argv, int idx)
 		if (waitpid(child, &status, 0) == -1)
 		{
 			perror("waitpid");
-			freearray2D(command);
 			free(full_cmd);
+			freearray2D(command);
 			return -1;
 		}
 	}
