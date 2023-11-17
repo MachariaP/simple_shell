@@ -20,7 +20,6 @@ char *read_line(void)
     if (n == -1)
     {
         perror("getline");
-	free(line);
         return (NULL); /* Return NULL to indicate an error or EOF */
     }
     else if (n == 0)
