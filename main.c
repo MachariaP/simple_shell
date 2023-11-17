@@ -29,7 +29,10 @@ int main(int ac, char **argv)
 		idx++;
 		command = tokenizer(line);
 		if (!command)
+		{
+			free(command);
 			continue;
+		}
 
 		if (is_builtin(command[0]))
 			handle_builtin(command, argv, &status, idx);
