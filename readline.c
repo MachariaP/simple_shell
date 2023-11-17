@@ -1,4 +1,4 @@
-#include "shell.h"
+  #include "shell.h"
 
 /**
  * read_line - Read a line of input from the user.
@@ -19,12 +19,8 @@ char *read_line(void)
     /* Check if an error occurred during input */
     if (n == -1)
     {
-        perror("getline");
-    }
-    else if (n == 0)
-    {
-	    free(line);
-	    return (NULL);
+        free(line);    /* Free the allocated memory for the line */
+        return (NULL); /* Return NULL to indicate an error or EOF */
     }
 
     return (line); /* Return the pointer to the read line */
