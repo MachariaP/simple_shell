@@ -23,6 +23,11 @@ char *read_line(void)
 	free(line);
         return (NULL); /* Return NULL to indicate an error or EOF */
     }
+    else if (n == 0)
+    {
+	    free(line);
+	    return (NULL);
+    }
 
     return (line); /* Return the pointer to the read line */
 }
