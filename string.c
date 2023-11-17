@@ -61,7 +61,7 @@ int _strcmp(char *s1, char *s2)
  *
  * Return: The length of the string.
  */
-int _strlen(const char *s)
+int _strlen(char *s)
 
 {
 	int len = 0;
