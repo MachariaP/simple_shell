@@ -45,8 +45,5 @@ void handle_builtin(char **command, char **argv, int *status, int idx);
 void exit_shell(char **command, char **argv, int *status, int idx);
 void print_env(char **command, int *status);
 
-/* ===== environ.c ===== */
-void set_env(char **command, int *status);
-void unset_env(char **command, int *status);
 
 #endif /* SHELL_H */

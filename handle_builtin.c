@@ -36,12 +36,6 @@ void handle_builtin(char **command, char **argv, int *status, int idx)
 
     else if (_strcmp(command[0], "env") == 0)
         print_env(command, status);
-
-    else if (_strcmp(command[0], "setenv") == 0)
-        set_env(command, status);
-
-    else if (_strcmp(command[0], "unsetenv") == 0)
-        unset_env(command, status);
 }
 
 /**
