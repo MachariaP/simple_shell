@@ -11,6 +11,7 @@ char **tokenizer(char *line)
 	char *token = NULL, *tmp = NULL;
 	char **command = NULL;
 	int cpt = 0, i = 0;
+	int j;
 
 	/* Check if the input string is NULL */
 	if (!line)
@@ -18,6 +19,11 @@ char **tokenizer(char *line)
 
 	/* Duplicate the input line to avoid modification */
 	tmp = _strdup(line);
+	if (!tmp)
+	{
+		perror("strdup");
+		return (NULL);
+	}
 
 	/* Tokenize the duplicated line */
 	token = strtok(tmp, DELIM);
@@ -25,8 +31,7 @@ char **tokenizer(char *line)
 	/* Handle the case when there are no tokens */
 	if (token == NULL)
 	{
-		free(line), tmp = NULL;
-		free(tmp), tmp = NULL;
+		free(tmp);
 		return (NULL);
 	}
 
@@ -39,13 +44,12 @@ char **tokenizer(char *line)
 
 	/* Free the duplicated line */
 	free(tmp);
-	tmp = NULL;
 
 	/* Allocate memory for the array of strings (command) */
 	command = malloc(sizeof(char *) * (cpt + 1));
 	if (!command)
 	{
-		free(line);
+		perror("malloc");
 		return (NULL);
 	}
 
@@ -54,15 +58,20 @@ char **tokenizer(char *line)
 	while (token)
 	{
 		command[i] = _strdup(token);
+		if (!command[i])
+		{
+			perror("strdup");
+			for (j = 0; j < i; j++)
+				free(command[j]);
+			free(command);
+			return (NULL);
+		}
 		token = strtok(NULL, DELIM);
 		i++;
 	}
 
 	/* Set the last element of the command array to NULL */
 	command[i] = NULL;
-
-	/* Free the original line */
-	free(line);
 
 	return (command);
 }
