@@ -22,22 +22,18 @@ int main(int ac, char **argv)
 		{
 			if (isatty(STDIN_FILENO))
 				write(STDOUT_FILENO, "\n", 1);
+			free(line);
 			return (status);
 		}
 
 		idx++;
 		command = tokenizer(line);
-		if (!command){
-			free(line);
+		if (!command)
 			continue;
-		}
 
 		if (is_builtin(command[0]))
 			handle_builtin(command, argv, &status, idx);
 		else
 			status = _execute(command, argv, idx);
-
-		free(line);
-		freearray2D(command);
 	}
 }
