@@ -8,27 +8,45 @@
  */
 int _setenv(char *variable, char *value)
 {
-    char *env_var;
-    int len;
+    int i;
+    char *new_env, *env_var;
+    size_t new_len;
 
     if (!variable || !value)
         return (-1);
 
-    len = _strlen(variable) + _strlen(value) + 2;
-    env_var = malloc(len);
-    if (!env_var)
+    /* Create new environment string */
+    new_len = _strlen(variable) + _strlen(value) + 2;
+    new_env = malloc(new_len);
+    if (!new_env)
         return (-1);
 
-    _strcpy(env_var, variable);
-    _strcat(env_var, "=");
-    _strcat(env_var, value);
+    _strcpy(new_env, variable);
+    _strcat(new_env, "=");
+    _strcat(new_env, value);
 
-    if (putenv(env_var) == -1)
+    /* Check if variable exists */
+    for (i = 0; environ[i]; i++)
     {
+        env_var = _strdup(environ[i]);
+        if (!env_var)
+        {
+            free(new_env);
+            return (-1);
+        }
+
+        if (_strcmp(strtok(env_var, "="), variable) == 0)
+        {
+            free(env_var);
+            environ[i] = new_env;
+            return (0);
+        }
         free(env_var);
-        return (-1);
     }
 
+    /* Add new variable */
+    environ[i] = new_env;
+    environ[i + 1] = NULL;
     return (0);
 }
 
@@ -39,13 +57,32 @@ int _setenv(char *variable, char *value)
  */
 int _unsetenv(char *variable)
 {
+    int i, j;
+    char *env_var;
+
     if (!variable)
         return (-1);
 
-    if (unsetenv(variable) == -1)
-        return (-1);
+    for (i = 0; environ[i]; i++)
+    {
+        env_var = _strdup(environ[i]);
+        if (!env_var)
+            return (-1);
 
-    return (0);
+        if (_strcmp(strtok(env_var, "="), variable) == 0)
+        {
+            free(env_var);
+            /* Shift remaining variables */
+            for (j = i; environ[j]; j++)
+            {
+                environ[j] = environ[j + 1];
+            }
+            return (0);
+        }
+        free(env_var);
+    }
+
+    return (-1);
 }
 
 /**
