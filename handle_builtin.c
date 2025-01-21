@@ -10,7 +10,7 @@ int is_builtin(char *command)
 {
     char *builtins[] =
         {
-            "exit", "env", "setenv",
+            "exit", "env", "setenv", "unsetenv",
             "cd", NULL};
     int i;
 
@@ -33,9 +33,12 @@ void handle_builtin(char **command, char **argv, int *status, int idx)
 {
     if (_strcmp(command[0], "exit") == 0)
         exit_shell(command, argv, status, idx);
-
     else if (_strcmp(command[0], "env") == 0)
         print_env(command, status);
+    else if (_strcmp(command[0], "setenv") == 0)
+        handle_setenv(command, status);
+    else if (_strcmp(command[0], "unsetenv") == 0)
+        handle_unsetenv(command, status);
 }
 
 /**

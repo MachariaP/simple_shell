@@ -45,4 +45,10 @@ void handle_builtin(char **command, char **argv, int *status, int idx);
 void exit_shell(char **command, char **argv, int *status, int idx);
 void print_env(char **command, int *status);
 
+/* ====== env_builtins.c ====== */
+void handle_setenv(char **command, int *status);
+void handle_unsetenv(char **command, int *status);
+int _setenv(char *variable, char *value);
+int _unsetenv(char *variable);
+
 #endif /* SHELL_H */
