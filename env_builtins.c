@@ -8,70 +8,45 @@
  */
 int _setenv(char *variable, char *value)
 {
-    int i, var_count = 0;
-    char *new_env, **new_environ;
+    int i;
+    char *new_env, *env_var;
+    size_t new_len;
 
     if (!variable || !value)
         return (-1);
 
-    /* Count current environment variables */
-    for (i = 0; environ[i]; i++)
-        var_count++;
-
     /* Create new environment string */
-    new_env = malloc(_strlen(variable) + _strlen(value) + 2);
+    new_len = _strlen(variable) + _strlen(value) + 2;
+    new_env = malloc(new_len);
     if (!new_env)
         return (-1);
+
     _strcpy(new_env, variable);
     _strcat(new_env, "=");
     _strcat(new_env, value);
 
-    /* Create new environment array */
-    new_environ = malloc(sizeof(char *) * (var_count + 2));
-    if (!new_environ)
-    {
-        free(new_env);
-        return (-1);
-    }
-
-    /* Copy and check for existing variable */
+    /* Check if variable exists */
     for (i = 0; environ[i]; i++)
     {
-        if (strncmp(environ[i], variable, _strlen(variable)) == 0 &&
-            environ[i][_strlen(variable)] == '=')
+        env_var = _strdup(environ[i]);
+        if (!env_var)
         {
-            /* Replace existing variable */
-            new_environ[i] = new_env;
-            continue;
-        }
-        /* Copy existing variable */
-        new_environ[i] = _strdup(environ[i]);
-        if (!new_environ[i])
-        {
-            while (--i >= 0)
-                free(new_environ[i]);
-            free(new_environ);
             free(new_env);
             return (-1);
         }
+
+        if (_strcmp(strtok(env_var, "="), variable) == 0)
+        {
+            free(env_var);
+            environ[i] = new_env;
+            return (0);
+        }
+        free(env_var);
     }
 
-    /* Add new variable if it didn't exist */
-    if (environ[i] == NULL)
-    {
-        new_environ[i] = new_env;
-        new_environ[i + 1] = NULL;
-    }
-
-    /* Free old environment if it was dynamically allocated */
-    if (environ != __environ)
-    {
-        for (i = 0; environ[i]; i++)
-            free(environ[i]);
-        free(environ);
-    }
-
-    environ = new_environ;
+    /* Add new variable */
+    environ[i] = new_env;
+    environ[i + 1] = NULL;
     return (0);
 }
 
@@ -82,56 +57,38 @@ int _setenv(char *variable, char *value)
  */
 int _unsetenv(char *variable)
 {
-    int i, j, var_count = 0;
-    char **new_environ;
+    int i, j;
+    char *env_var;
 
     if (!variable)
         return (-1);
 
-    /* Count current environment variables */
     for (i = 0; environ[i]; i++)
-        var_count++;
-
-    /* Create new environment array */
-    new_environ = malloc(sizeof(char *) * var_count);
-    if (!new_environ)
-        return (-1);
-
-    /* Copy environment excluding the variable to unset */
-    for (i = 0, j = 0; environ[i]; i++)
     {
-        if (strncmp(environ[i], variable, _strlen(variable)) != 0 ||
-            environ[i][_strlen(variable)] != '=')
+        env_var = _strdup(environ[i]);
+        if (!env_var)
+            return (-1);
+
+        if (_strcmp(strtok(env_var, "="), variable) == 0)
         {
-            new_environ[j] = _strdup(environ[i]);
-            if (!new_environ[j])
+            free(env_var);
+            /* Shift remaining variables */
+            for (j = i; environ[j]; j++)
             {
-                while (--j >= 0)
-                    free(new_environ[j]);
-                free(new_environ);
-                return (-1);
+                environ[j] = environ[j + 1];
             }
-            j++;
+            return (0);
         }
-    }
-    new_environ[j] = NULL;
-
-    /* Free old environment if it was dynamically allocated */
-    if (environ != __environ)
-    {
-        for (i = 0; environ[i]; i++)
-            free(environ[i]);
-        free(environ);
+        free(env_var);
     }
 
-    environ = new_environ;
-    return (0);
+    return (-1);
 }
 
 /**
- * handle_setenv - Handles the 'setenv' built-in command
- * @command: The setenv command and its arguments
- * @status: The exit status of the last command
+ * handle_setenv - Handles the 'setenv' built-in command.
+ * @command: The setenv command and its arguments.
+ * @status: The exit status of the last command.
  */
 void handle_setenv(char **command, int *status)
 {
@@ -156,9 +113,9 @@ void handle_setenv(char **command, int *status)
 }
 
 /**
- * handle_unsetenv - Handles the 'unsetenv' built-in command
- * @command: The unsetenv command and its arguments
- * @status: The exit status of the last command
+ * handle_unsetenv - Handles the 'unsetenv' built-in command.
+ * @command: The unsetenv command and its arguments.
+ * @status: The exit status of the last command.
  */
 void handle_unsetenv(char **command, int *status)
 {
