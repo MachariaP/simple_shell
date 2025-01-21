@@ -51,4 +51,9 @@ void handle_unsetenv(char **command, int *status);
 int _setenv(char *variable, char *value);
 int _unsetenv(char *variable);
 
+/* ====== cd_builtin.c ====== */
+void handle_cd(char **command, int *status);
+int change_dir(char *path);
+char *get_oldpwd(void);
+
 #endif /* SHELL_H */
