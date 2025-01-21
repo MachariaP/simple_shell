@@ -7,44 +7,30 @@
  */
 int change_dir(char *path)
 {
-    char *current_pwd = NULL;
-    char buffer[1024];
+    char current_dir[1024];
+    char *old_pwd;
 
-    /* Get current directory for OLDPWD */
-    current_pwd = getcwd(buffer, 1024);
-    if (!current_pwd)
+    /* Get the current directory before changing */
+    if (getcwd(current_dir, sizeof(current_dir)) == NULL)
         return (-1);
 
-    /* Change directory */
+    /* Try to change directory */
     if (chdir(path) == -1)
         return (-1);
 
-    /* Update PWD and OLDPWD */
-    if (_setenv("OLDPWD", current_pwd) == -1)
-        return (-1);
+    /* Update OLDPWD */
+    old_pwd = _strdup(current_dir);
+    if (old_pwd)
+    {
+        _setenv("OLDPWD", old_pwd);
+        free(old_pwd);
+    }
 
-    current_pwd = getcwd(buffer, 1024);
-    if (!current_pwd)
-        return (-1);
-
-    if (_setenv("PWD", current_pwd) == -1)
-        return (-1);
+    /* Update PWD */
+    if (getcwd(current_dir, sizeof(current_dir)) != NULL)
+        _setenv("PWD", current_dir);
 
     return (0);
-}
-
-/**
- * get_oldpwd - Get the OLDPWD environment variable
- * Return: Pointer to OLDPWD value or NULL
- */
-char *get_oldpwd(void)
-{
-    char *oldpwd = _getenv("OLDPWD");
-
-    if (!oldpwd)
-        return (NULL);
-
-    return (_strdup(oldpwd));
 }
 
 /**
@@ -54,38 +40,35 @@ char *get_oldpwd(void)
  */
 void handle_cd(char **command, int *status)
 {
-    char *dir = command[1];
-    char *oldpwd = NULL;
+    char *dir = NULL;
+    char *oldpwd;
 
-    /* If no argument is given, change to HOME directory */
-    if (!dir)
+    if (!command[1] || _strcmp(command[1], "~") == 0)
     {
         dir = _getenv("HOME");
         if (!dir)
         {
-            write(STDERR_FILENO, "cd: No HOME directory\n", 21);
+            write(STDERR_FILENO, "cd: HOME not set\n", 16);
             *status = 1;
-            freearray2D(command);
             return;
         }
     }
-    /* Handle cd - (change to previous directory) */
-    else if (_strcmp(dir, "-") == 0)
+    else if (_strcmp(command[1], "-") == 0)
     {
-        oldpwd = get_oldpwd();
+        oldpwd = _getenv("OLDPWD");
         if (!oldpwd)
         {
             write(STDERR_FILENO, "cd: OLDPWD not set\n", 19);
             *status = 1;
-            freearray2D(command);
             return;
         }
         dir = oldpwd;
         write(STDOUT_FILENO, dir, _strlen(dir));
         write(STDOUT_FILENO, "\n", 1);
     }
+    else
+        dir = command[1];
 
-    /* Change directory */
     if (change_dir(dir) == -1)
     {
         write(STDERR_FILENO, command[0], _strlen(command[0]));
@@ -93,12 +76,9 @@ void handle_cd(char **command, int *status)
         write(STDERR_FILENO, dir, _strlen(dir));
         write(STDERR_FILENO, "\n", 1);
         *status = 1;
-        free(oldpwd);
-        freearray2D(command);
-        return;
     }
+    else
+        *status = 0;
 
-    free(oldpwd);
-    *status = 0;
     freearray2D(command);
 }
