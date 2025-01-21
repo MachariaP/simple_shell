@@ -14,6 +14,7 @@
 
 #define DELIM " \t\n"
 extern char **environ;
+extern char **__environ;
 
 char *read_line(void);
 char **tokenizer(char *line);
