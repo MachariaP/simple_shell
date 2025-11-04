@@ -18,9 +18,9 @@
 
 **Brief Description:**
 
-Simple Shell is a custom-built UNIX command line interpreter developed in C, designed to replicate the core functionality of the standard `/bin/sh` shell. This project serves as an educational implementation that demonstrates fundamental systems programming concepts including process management, command parsing, environment variable manipulation, and system call utilization. The shell provides both interactive and non-interactive modes, allowing users to execute commands, manage built-in functions, and navigate the file system with ease.
+Simple Shell is a custom-built UNIX command line interpreter developed in C, designed to replicate the core functionality of the standard `/bin/sh` shell. This project serves as an educational implementation that demonstrates fundamental systems programming concepts. These include process management, command parsing, environment variable manipulation, and system call utilization. The shell provides both interactive and non-interactive modes, allowing users to execute commands, manage built-in functions, and navigate the file system with ease.
 
-The project addresses the challenge of understanding low-level operating system interactions by implementing a fully functional shell from scratch. It handles user input processing, command execution via fork-exec model, PATH resolution for executable lookup, error handling, and memory management—all while adhering to strict coding standards and best practices.
+The project addresses the challenge of understanding low-level operating system interactions by implementing a fully functional shell from scratch. It handles user input processing, command execution via fork-exec model, and PATH resolution for executable lookup. Additionally, it provides comprehensive error handling and memory management—all while adhering to strict coding standards and best practices.
 
 **Project Goals:**
 
