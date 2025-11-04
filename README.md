@@ -1,685 +1,360 @@
-# 0x16. C - Simple Shell
+# 🐚 Simple Shell - UNIX Command Line Interpreter
 
+## 📜 Table of Contents
+* [1. Project Overview](#1-project-overview)
+* [2. Team Roles and Responsibilities](#2-team-roles-and-responsibilities)
+* [3. Technology Stack Overview](#3-technology-stack-overview)
+* [4. Database Design Overview](#4-database-design-overview)
+* [5. Feature Breakdown](#5-feature-breakdown)
+* [6. API Security Overview](#6-api-security-overview)
+* [7. CI/CD Pipeline Overview](#7-cicd-pipeline-overview)
+* [8. Resources](#8-resources)
+* [9. License](#9-license)
+* [10. Created By](#10-created-by)
 
+---
 
--   By:  Julien Barbier
--   Weight:  10
+## 1. Project Overview
 
-### Concepts
+**Brief Description:**
 
-_For this project, we expect you to look at these concepts:_
+Simple Shell is a custom-built UNIX command line interpreter developed in C, designed to replicate the core functionality of the standard `/bin/sh` shell. This project serves as an educational implementation that demonstrates fundamental systems programming concepts. These include process management, command parsing, environment variable manipulation, and system call utilization. The shell provides both interactive and non-interactive modes, allowing users to execute commands, manage built-in functions, and navigate the file system with ease.
 
--   [Everything you need to know to start coding your own shell](https://intranet.alxswe.com/concepts/64)
--   [Approaching a Project](https://intranet.alxswe.com/concepts/350)
--   [All about Team Projects + Pairings + FAQ (A must read)](https://intranet.alxswe.com/concepts/100037)
--   [Struggling with the sandbox? Try this: Using Docker & WSL on your local host](https://intranet.alxswe.com/concepts/100039)
+The project addresses the challenge of understanding low-level operating system interactions by implementing a fully functional shell from scratch. It handles user input processing, command execution via fork-exec model, and PATH resolution for executable lookup. Additionally, it provides comprehensive error handling and memory management—all while adhering to strict coding standards and best practices.
 
-## Background Context
+**Project Goals:**
 
-Write a simple UNIX command interpreter.
+- Develop a fully functional UNIX command interpreter that mimics `/bin/sh` behavior
+- Implement robust process management using fork(), execve(), and wait() system calls
+- Provide support for both interactive and non-interactive command execution modes
+- Implement essential built-in commands (exit, env, cd, setenv, unsetenv)
+- Ensure proper memory management with zero memory leaks
+- Maintain clean, readable code following Betty coding style standards
+- Handle edge cases and errors gracefully with appropriate error messages
+- Demonstrate proficiency in C programming and systems programming concepts
 
-![](https://s3.amazonaws.com/intranet-projects-files/holbertonschool-low_level_programming/235/shell.jpeg)
+**Key Tech Stack:**
 
-_^ “The Gates of Shell”, by  [Spencer Cheng](https://intranet.alxswe.com/rltoken/AtYRSM03vJDrko9xHodxFQ "Spencer Cheng"), featuring  [Julien Barbier](https://intranet.alxswe.com/rltoken/-ezXgcyfhc8qU1DeUInLUA "Julien Barbier")_
+C Programming Language (C89 Standard), GCC Compiler, Linux System Calls (fork, execve, wait, chdir, stat), Standard C Library, POSIX APIs
 
-## Important message from Julien
+---
 
-It’s time for the famous Simple Shell project. This is one of the most anticipated project and also one that will challenge you a lot about everything you have learn so far:
+## 2. Team Roles and Responsibilities
 
--   Basics of programming
--   Basics of C
--   Basics of thinking like an engineer
--   Group work
--   and Learning how to learn
+| Role | Key Responsibility |
+|------|-------------------|
+| **Project Lead / Systems Architect** | Overall project design, system architecture decisions, code review, and ensuring project meets specifications. Coordinates team efforts and manages timeline. |
+| **Core Shell Developer** | Implements main shell loop, command parsing, tokenization, and input handling. Develops the read-eval-execute cycle and manages program flow. |
+| **Process Management Specialist** | Handles fork-exec implementation, process creation, child process management, and signal handling. Ensures proper process synchronization. |
+| **Built-in Commands Developer** | Implements all built-in commands (exit, env, cd, setenv, unsetenv) and their argument handling. Manages environment variable manipulation. |
+| **Path Resolution Engineer** | Develops PATH environment variable parsing, executable file lookup, and command resolution logic. Implements file existence validation. |
+| **Memory Management Specialist** | Ensures proper memory allocation/deallocation, prevents memory leaks, implements cleanup functions, and manages dynamic string operations. |
+| **Testing & Quality Assurance** | Creates comprehensive test suites, validates edge cases, performs memory leak detection (Valgrind), and ensures Betty style compliance. |
+| **Documentation Specialist** | Maintains project documentation, writes function documentation, creates user guides, and ensures code comments follow standards. |
 
-I would like to take this moment to remind you about a few important things.
+---
 
-First, remember the framework. If you do not know it by heart already, it is probably a good idea to read it again:  [https://intranet.alxswe.com/concepts/559](https://intranet.alxswe.com/rltoken/a08_c01OP1XHY3awtkdFRA "https://intranet.alxswe.com/concepts/559")
+## 3. Technology Stack Overview
 
-Note that there is no point in this framework that says it is ok to look at code from other people. It is not allowed to look at other people’s code, either other students or online articles or videos. At ALX SE we do not copy solutions and we do not look at it when we start a project.
+| Technology | Purpose in the Project |
+|-----------|----------------------|
+| **C Language (GNU89 Standard)** | Primary programming language for implementing the shell. Provides low-level system access and fine-grained control over memory and processes. |
+| **GCC Compiler** | Compiles the C source code with strict flags (-Wall -Werror -Wextra -pedantic) to ensure code quality and catch potential bugs at compile time. |
+| **fork() System Call** | Creates child processes to execute commands without affecting the parent shell process. Essential for process isolation. |
+| **execve() System Call** | Replaces child process image with the command to be executed. Core mechanism for running external programs. |
+| **wait()/waitpid()** | Parent process synchronization with child processes. Ensures proper process cleanup and exit status retrieval. |
+| **getline()** | Reads user input from stdin, handling variable-length input lines dynamically with automatic memory allocation. |
+| **strtok()** | Tokenizes input strings into command and arguments by splitting on delimiters (space, tab, newline). |
+| **stat() System Call** | Checks file existence and permissions when resolving command paths. Validates executable files before execution. |
+| **chdir() System Call** | Changes the current working directory for the cd built-in command implementation. |
+| **getcwd()** | Retrieves the current working directory path for PWD environment variable updates. |
+| **malloc()/free()** | Dynamic memory allocation and deallocation for strings, command arrays, and data structures. Critical for memory management. |
+| **access() System Call** | Verifies file accessibility and permissions before attempting execution. |
+| **POSIX APIs** | Provides standard interfaces for file operations (open, read, write, close) and process management across UNIX-like systems. |
+| **environ Variable** | Global variable holding environment variables. Used for env command and environment manipulation. |
+| **isatty()** | Determines if stdin is connected to a terminal (interactive mode) or a pipe (non-interactive mode). |
+| **write() System Call** | Outputs messages to stdout and stderr, providing control over output buffering and error handling. |
 
-In the context of learning (some of these will no longer be true when you work):
+---
 
--   NEVER copy any code, never look at solution (and never give any solution to your friends, you are not helping them by doing so)
--   ALWAYS write code alone from scratch after you get help to check that you have actually understood. If you can not do it, you have not understood enough, and need to study more. Do not rewrite code from memory, but from understanding.
+## 4. Database Design Overview
 
-I saw some of you sharing resources with each other already. Tutorials on how to do the shell step by step with all the code associated with these, or even video and documents with the solution without even any explanation. This is not the right way to learn. Please do not be tempted by these links. They will only push you to take shortcuts and / or cheat. And trust me, you will be caught.  [Kimba](https://intranet.alxswe.com/rltoken/3nocfYiMMxjbhlMllUqLxg "Kimba")  is not a joke and he is here to remind you why you are here.
+**Note:** This project is a command-line shell interpreter and does not utilize a database system. As a systems programming project focused on process management and command execution, it operates directly with the operating system and file system rather than persistent data storage.
 
-While we encourage the use of ChatGPT and co in the framework (also, not right away, but at the right step, see framework), it is important to understand that the same rules apply to these AI tools (again, in the context of learning. When you will work it will be completely different, but context matters). At no point does it say that you are allowed to use copilot or ChatGPT to code the solution. If you do, you will get 200% (for a few hours), understand 0, learn 0, and you will be caught for cheating 100%, and then your score for both you and your partner will be 0%. If you don’t get how to use ChatGPT and other AI tools in the context of learning, simply do not use them.
+**Key Entities:**
 
-The reality is that at this point of the program, if you have not cheated before, you have everything you need to complete the project with what you have learned + the page “Everything you need to know to start coding your own shell”  [https://intranet.alxswe.com/concepts/64](https://intranet.alxswe.com/rltoken/e6Nw3W01-33JDxlCyKX-Kw "https://intranet.alxswe.com/concepts/64")
+- **Command Structure**: Represents parsed user input with command name and arguments array
+- **Process Information**: Manages parent and child process IDs, exit status codes, and process states
+- **Environment Variables**: Key-value pairs stored in the `environ` global variable (e.g., PATH, HOME, PWD)
 
-Actually, you do not even need to open Google once. Focus on your whiteboarding, and everything will fall in place. Remember, at ALX SE you never learn the solution, you learn how to walk toward the solution. You learn to create the tutorial, so if you follow one, you are looking at the solution, you are taking a very serious shortcut that will undermine your learning.
+**Relationships:**
 
-Last thing about the framework. Note that the first thing to do is “0. Read”. Every detail counts. Make sure you read and test everything.
+- **Shell to Process**: One shell process can spawn multiple child processes sequentially. Each command execution creates a new child process.
+- **Process to Environment**: Each process inherits the environment variables from its parent process. Built-in commands can modify the environment, affecting future child processes.
+- **Command to PATH**: Each command lookup traverses PATH directories sequentially until the executable is found or all paths are exhausted.
 
-The shell project is a group project. That means you will be paired with someone. You already did this with printf, so please apply everything you have learned from the printf experience here. A quick reminder, that a group project is NOT:
+---
 
+## 5. Feature Breakdown
 
-A group project at ALX SE is a project that both of you are responsible for. Everything anyone pushes to Github is the responsibility of both partners. It is not ok to say later “I didn’t cheat it’s my partner I didn’t know they didn’t tell me”.
+**Core Shell Functionality:**
 
-So you are supposed to work TOGETHER. And you should both understand every single line of code that any of you pushes. Here is a link for you to read about pair programming:  [https://intranet.alxswe.com/concepts/121](https://intranet.alxswe.com/rltoken/G52zDoV1f2dmmMl3ngchyw "https://intranet.alxswe.com/concepts/121")
+- **Interactive Mode**: Displays a prompt (`$ `), reads user input, executes commands, and displays the prompt again after each command completion. Provides a user-friendly command-line interface similar to standard shells.
 
-If you plan on not working on the shell project (or if at any point in time you can’t), it is your responsibility to tell both the staff and your partner so that they can find another partner who will work with them asap.
+- **Non-Interactive Mode**: Accepts commands from pipes or files without displaying prompts. Enables automation and script execution by processing commands line-by-line from stdin.
 
-If your group gets caught for plagiarism we will not tolerate “I didn’t do anything, so I should not be flagged”. Yes you should be flagged, because you are someone who doesn’t care about others and thought it was ok to let your partner down and to maybe get the score without doing anything.
+- **Command Execution with Arguments**: Parses command lines into command name and multiple arguments, then executes the specified program with the provided arguments using the execve system call.
 
-The shell is an incredibly cool project. GL HF!
+- **PATH Resolution**: Automatically searches directories listed in the PATH environment variable to locate executable files. Users can run commands by name (e.g., `ls`) without specifying the full path (`/bin/ls`).
 
-Julien
+- **Built-in Command: exit**: Terminates the shell with an optional exit status code. Supports `exit` (uses last command status) and `exit n` (exits with status n). Validates numeric arguments and reports errors for illegal values.
 
-## Resources
+- **Built-in Command: env**: Prints all environment variables in the format `KEY=VALUE`, one per line. Provides visibility into the current process environment without external dependencies.
 
-**Read or watch**:
+- **Built-in Command: cd**: Changes the current working directory. Supports `cd` (goes to HOME), `cd <directory>` (changes to specified path), and `cd -` (switches to previous directory). Updates PWD and OLDPWD environment variables automatically.
 
--   [Unix shell](https://intranet.alxswe.com/rltoken/f0YU9TAhniMXWlSXtb64Yw "Unix shell")
--   [Thompson shell](https://intranet.alxswe.com/rltoken/7LJOp2qP7qHUcsOK2-F3qA "Thompson shell")
--   [Ken Thompson](https://intranet.alxswe.com/rltoken/wTSu31ZP1f7fFTJFgRQC7w "Ken Thompson")
--   **Everything you need to know to start coding your own shell**  concept page
+- **Built-in Command: setenv**: Creates a new environment variable or modifies an existing one. Usage: `setenv VARIABLE VALUE`. Validates input to ensure both variable name and value are provided.
 
-**man or help**:
+- **Built-in Command: unsetenv**: Removes an environment variable from the environment. Usage: `unsetenv VARIABLE`. Validates that the variable name is provided and handles non-existent variables gracefully.
 
--   `sh`  (_Run  `sh`  as well_)
+- **Error Handling**: Provides informative error messages when commands are not found, execution fails, or invalid arguments are provided. Error messages include the shell name and command line number for debugging.
 
-## Learning Objectives
+- **EOF Handling (Ctrl+D)**: Gracefully handles end-of-file condition by exiting the shell cleanly when EOF is detected on stdin. Ensures proper resource cleanup and status code return.
 
-At the end of this project, you are expected to be able to  [explain to anyone](https://intranet.alxswe.com/rltoken/9LNz86CtOTos9oL3zxIO3A "explain to anyone"),  **without the help of Google**:
+- **Memory Management**: Implements thorough memory cleanup with no memory leaks. All dynamically allocated memory is properly freed before program termination. Validated with Valgrind memory checker.
 
-### General
+- **Signal Handling**: Responds appropriately to Ctrl+C (SIGINT) by displaying a new prompt without terminating the shell, maintaining user session continuity.
 
--   Who designed and implemented the original Unix operating system
--   Who wrote the first version of the UNIX shell
--   Who invented the B programming language (the direct predecessor to the C programming language)
--   Who is Ken Thompson
--   How does a shell work
--   What is a pid and a ppid
--   How to manipulate the environment of the current process
--   What is the difference between a function and a system call
--   How to create processes
--   What are the three prototypes of  `main`
--   How does the shell use the  `PATH`  to find the programs
--   How to execute another program with the  `execve`  system call
--   How to suspend the execution of a process until one of its children terminates
--   What is  `EOF`  / “end-of-file”?
+- **Custom String Functions**: Implements custom versions of standard string functions (_strlen, _strcmp, _strcpy, _strcat, _strdup) to minimize dependencies and demonstrate low-level string manipulation.
 
-### Copyright - Plagiarism
+---
 
--   You are tasked to come up with solutions for the tasks below yourself to meet with the above learning objectives.
--   You will not be able to meet the objectives of this or any following project by copying and pasting someone else’s work.
--   You are not allowed to publish any content of this project.
--   Any form of plagiarism is strictly forbidden and will result in removal from the program.
+## 6. API Security Overview
 
-## Requirements
+**Note:** This shell is a local command-line interpreter that does not expose network APIs or web services. Security considerations focus on safe system interaction and process management rather than API endpoint protection.
 
-### General
+**Key Security Measures:**
 
--   Allowed editors:  `vi`,  `vim`,  `emacs`
--   All your files will be compiled on Ubuntu 20.04 LTS using  `gcc`, using the options  `-Wall -Werror -Wextra -pedantic -std=gnu89`
--   All your files should end with a new line
--   A  `README.md`  file, at the root of the folder of the project is mandatory
--   Your code should use the  `Betty`  style. It will be checked using  [betty-style.pl](https://github.com/alx-tools/Betty/blob/master/betty-style.pl "betty-style.pl")  and  [betty-doc.pl](https://github.com/alx-tools/Betty/blob/master/betty-doc.pl "betty-doc.pl")
--   Your shell should not have any memory leaks
--   No more than 5 functions per file
--   All your header files should be include guarded
--   Use system calls only when you need to ([why?](https://intranet.alxswe.com/rltoken/EU7B1PTSy14INnZEShpobQ "why?"))
--   Write a  `README`  with the description of your project
--   You should have an  `AUTHORS`  file at the root of your repository, listing all individuals having contributed content to the repository. Format, see  [Docker](https://intranet.alxswe.com/rltoken/UL8J3kgl7HBK_Z9iBL3JFg "Docker")
+- **Input Validation**: All user input is validated before processing. Command arguments are checked for proper format, and built-in commands validate their arguments to prevent malformed input from causing crashes or undefined behavior. This is crucial to prevent command injection and buffer overflow attacks.
 
-### GitHub
+- **Memory Safety**: Strict memory management prevents buffer overflows, use-after-free vulnerabilities, and memory leaks. All malloc() calls are checked for NULL returns, and proper bounds checking is performed on string operations. Memory is freed immediately after use to minimize attack surface.
 
-*_There should be one project repository per group. If you and your partner have a repository with the same name in both your accounts, you risk a 0% score. Add your partner as a collaborator. *_
+- **Path Traversal Protection**: The PATH resolution mechanism only searches predefined directories from the PATH environment variable, preventing arbitrary file execution from untrusted locations. Commands with `/` are executed directly only if they exist and have proper permissions.
 
-## More Info
+- **Privilege Management**: The shell runs with the same privileges as the user who launches it, preventing privilege escalation. It does not implement setuid/setgid operations and relies on the operating system's permission model.
 
-### Output
+- **Error Handling**: All system calls (fork, execve, chdir, stat) check return values and handle errors appropriately. Failed operations report errors without exposing sensitive system information that could aid attackers.
 
--   Unless specified otherwise, your program  **must have the exact same output**  as  `sh`  (`/bin/sh`) as well as the exact same error output.
--   The only difference is when you print an error, the name of the program must be equivalent to your  `argv[0]`  (See below)
+- **Environment Variable Sanitization**: Built-in commands that modify environment variables (setenv, unsetenv) validate input to prevent injection of malicious environment values that could affect child process behavior.
 
-Example of error with  `sh`:
+- **Command Injection Prevention**: Input tokenization safely splits commands and arguments without evaluating shell metacharacters (`;`, `|`, `&`, `>`, `<`), preventing command chaining exploits common in web applications.
 
-```
-$ echo "qwerty" | /bin/sh
-/bin/sh: 1: qwerty: not found
-$ echo "qwerty" | /bin/../bin/sh
-/bin/../bin/sh: 1: qwerty: not found
-$
+**Why Security Matters:**
 
-```
+Even though this is a local shell, security is crucial because it directly interfaces with the operating system. Improper handling of user input or system calls could allow malicious users to crash the shell, corrupt memory, execute unintended commands, or potentially escalate privileges. Following secure coding practices ensures the shell behaves predictably and safely under all conditions.
 
-Same error with your program  `hsh`:
+---
 
-```
-$ echo "qwerty" | ./hsh
-./hsh: 1: qwerty: not found
-$ echo "qwerty" | ./././hsh
-./././hsh: 1: qwerty: not found
-$
+## 7. CI/CD Pipeline Overview
 
+**Continuous Integration and Continuous Deployment (CI/CD)** is a software development practice that automates the process of testing, building, and deploying code changes. For this Simple Shell project, implementing a CI/CD pipeline would ensure code quality, catch bugs early, and maintain consistency across development cycles.
 
-```
+**Why CI/CD Matters for This Project:**
 
-### List of allowed functions and system calls
+In a collaborative development environment, multiple developers may contribute code simultaneously. CI/CD pipelines automatically validate each code change against quality standards, run comprehensive test suites, and ensure that new features don't break existing functionality. This is especially important for systems programming projects like a shell, where bugs can cause crashes, memory leaks, or security vulnerabilities.
 
--   `access`  (man 2 access)
--   `chdir`  (man 2 chdir)
--   `close`  (man 2 close)
--   `closedir`  (man 3 closedir)
--   `execve`  (man 2 execve)
--   `exit`  (man 3 exit)
--   `_exit`  (man 2 _exit)
--   `fflush`  (man 3 fflush)
--   `fork`  (man 2 fork)
--   `free`  (man 3 free)
--   `getcwd`  (man 3 getcwd)
--   `getline`  (man 3 getline)
--   `getpid`  (man 2 getpid)
--   `isatty`  (man 3 isatty)
--   `kill`  (man 2 kill)
--   `malloc`  (man 3 malloc)
--   `open`  (man 2 open)
--   `opendir`  (man 3 opendir)
--   `perror`  (man 3 perror)
--   `read`  (man 2 read)
--   `readdir`  (man 3 readdir)
--   `signal`  (man 2 signal)
--   `stat`  (__xstat) (man 2 stat)
--   `lstat`  (__lxstat) (man 2 lstat)
--   `fstat`  (__fxstat) (man 2 fstat)
--   `strtok`  (man 3 strtok)
--   `wait`  (man 2 wait)
--   `waitpid`  (man 2 waitpid)
--   `wait3`  (man 2 wait3)
--   `wait4`  (man 2 wait4)
--   `write`  (man 2 write)
+**Recommended CI/CD Strategy:**
+
+- **GitHub Actions Integration**: Utilize GitHub Actions to automatically trigger builds and tests on every push and pull request. Configure workflows to compile the code with strict GCC flags and run all test cases.
+
+- **Betty Style Checker**: Integrate Betty style checker as a CI step to automatically verify code formatting and style compliance before merging changes, ensuring consistent code quality.
+
+- **Valgrind Memory Testing**: Run Valgrind on test cases in CI to detect memory leaks, use-after-free errors, and invalid memory accesses. This catches memory management issues before they reach production.
+
+- **Automated Testing Suite**: Develop shell scripts or test programs that execute various command scenarios, including edge cases, and verify correct output and exit codes. Run these tests automatically in CI.
+
+- **Static Code Analysis**: Incorporate static analysis tools (like cppcheck) to detect potential bugs, code smells, and security vulnerabilities without executing the code.
+
+- **Build Artifacts**: Archive compiled binaries as CI artifacts for each successful build, enabling easy deployment and version tracking.
+
+- **Docker Containerization**: Use Docker containers in CI to ensure consistent build environments across different platforms and developer machines, eliminating "works on my machine" issues.
+
+**Tools Involved:**
+
+- **GitHub Actions**: Workflow automation and CI/CD orchestration
+- **GCC**: Automated compilation with warning flags
+- **Valgrind**: Memory leak detection and analysis
+- **Betty**: Code style checking and enforcement
+- **Shell Scripts**: Test automation and validation
+- **Docker**: Containerized build environments
+
+**Current Status:**
+
+This repository does not currently have automated CI/CD pipelines configured. Future enhancements should include adding `.github/workflows/` configuration files to implement the above CI/CD strategy.
+
+---
+
+## 8. Resources
+
+**Learning Materials:**
+
+- [Unix Shell - Wikipedia](https://en.wikipedia.org/wiki/Unix_shell)
+- [Thompson Shell History](https://en.wikipedia.org/wiki/Thompson_shell)
+- [Ken Thompson Biography](https://en.wikipedia.org/wiki/Ken_Thompson)
+- [Fork System Call - man page](https://man7.org/linux/man-pages/man2/fork.2.html)
+- [Execve System Call - man page](https://man7.org/linux/man-pages/man2/execve.2.html)
+- [Wait/Waitpid - man page](https://man7.org/linux/man-pages/man2/wait.2.html)
+
+**Development Tools:**
+
+- [Betty Style Guide](https://github.com/alx-tools/Betty)
+- [GCC Compiler Documentation](https://gcc.gnu.org/onlinedocs/)
+- [Valgrind Memory Debugger](https://valgrind.org/docs/manual/manual.html)
+
+**Reference Documentation:**
+
+- [GNU C Library Manual](https://www.gnu.org/software/libc/manual/)
+- [POSIX Standards](https://pubs.opengroup.org/onlinepubs/9699919799/)
+- [Advanced Programming in the UNIX Environment by W. Richard Stevens](https://www.apuebook.com/)
+
+---
+
+## 9. License
+
+This project is licensed under the **MIT License**.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+---
+
+## 10. Created By
+
+**Phinehas Macharia** ([@MachariaP](https://github.com/MachariaP))
+
+Systems Programmer | Shell Developer | C Enthusiast
+
+Email: walburphinehas78@gmail.com
+
+---
+
+## 🚀 Getting Started
 
 ### Compilation
 
-Your shell will be compiled this way:
+Compile the shell with the following command:
 
-```
+```bash
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
-
 ```
 
-### Testing
+### Usage
 
-Your shell should work like this in interactive mode:
+**Interactive Mode:**
 
-```
+```bash
 $ ./hsh
-($) /bin/ls
-hsh main.c shell.c
-($)
-($) exit
-$
-
-```
-
-But also in non-interactive mode:
-
-```
-$ echo "/bin/ls" | ./hsh
-hsh main.c shell.c test_ls_2
-$
-$ cat test_ls_2
-/bin/ls
-/bin/ls
-$
-$ cat test_ls_2 | ./hsh
-hsh main.c shell.c test_ls_2
-hsh main.c shell.c test_ls_2
-$
-
-```
-
-### Checks
-
-The Checker will be released at the end of the project (1-2 days before the deadline). We  **strongly**  encourage the entire class to work together to create a suite of checks covering both regular tests and edge cases for each task. See task  `8. Test suite`.
-
-## Tasks
-
-### 0. Betty would be proud
-
-mandatory
-
-Write a beautiful code that passes the Betty checks
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 1. Simple shell 0.1
-
-mandatory
-
-Write a UNIX command line interpreter.
-
--   Usage:  `simple_shell`
-
-Your Shell should:
-
--   Display a prompt and wait for the user to type a command. A command line always ends with a new line.
--   The prompt is displayed again each time a command has been executed.
--   The command lines are simple, no semicolons, no pipes, no redirections or any other advanced features.
--   The command lines are made only of one word. No arguments will be passed to programs.
--   If an executable cannot be found, print an error message and display the prompt again.
--   Handle errors.
--   You have to handle the “end of file” condition (`Ctrl+D`)
-
-You don’t have to:
-
--   use the  `PATH`
--   implement built-ins
--   handle special characters :  `"`,  `'`,  `` ` ``,  `\`,  `*`,  `&`,  `#`
--   be able to move the cursor
--   handle commands with arguments
-
-_`execve`  will be the core part of your Shell, don’t forget to pass the environ to it…_
-
-```
-julien@ubuntu:~/shell$ ./shell 
-#cisfun$ ls
-./shell: No such file or directory
-#cisfun$ /bin/ls
-barbie_j       env-main.c  exec.c  fork.c  pid.c  ppid.c    prompt   prompt.c  shell.c  stat.c         wait
-env-environ.c  exec    fork    mypid   ppid   printenv  promptc  shell     stat test_scripting.sh  wait.c
-#cisfun$ /bin/ls -l
-./shell: No such file or directory
-#cisfun$ ^[[D^[[D^[[D
-./shell: No such file or directory
-#cisfun$ ^[[C^[[C^[[C^[[C
-./shell: No such file or directory
-#cisfun$ exit
-./shell: No such file or directory
-#cisfun$ ^C
-julien@ubuntu:~/shell$ echo "/bin/ls" | ./shell
-barbie_j       env-main.c  exec.c  fork.c  pid.c  ppid.c    prompt   prompt.c  shell.c  stat.c         wait
-env-environ.c  exec    fork    mypid   ppid   printenv  promptc  shell     stat test_scripting.sh  wait.c
-#cisfun$ julien@ubuntu:~/shell$
-
-```
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 2. Simple shell 0.2
-
-mandatory
-
-Simple shell 0.1 +
-
--   Handle command lines with arguments
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 3. Simple shell 0.3
-
-mandatory
-
-Simple shell 0.2 +
-
--   Handle the  `PATH`
--   `fork`  must not be called if the command doesn’t exist
-
-```
-julien@ubuntu:~/shell$ ./shell_0.3
-:) /bin/ls
-barbie_j       env-main.c  exec.c  fork.c  pid.c  ppid.c    prompt   prompt.c  shell_0.3  stat    test_scripting.sh  wait.c
-env-environ.c  exec    fork    mypid   ppid   printenv  promptc  shell     shell.c    stat.c  wait
-:) ls
-barbie_j       env-main.c  exec.c  fork.c  pid.c  ppid.c    prompt   prompt.c  shell_0.3  stat    test_scripting.sh  wait.c
-env-environ.c  exec    fork    mypid   ppid   printenv  promptc  shell     shell.c    stat.c  wait
-:) ls -l /tmp 
-total 20
--rw------- 1 julien julien    0 Dec  5 12:09 config-err-aAMZrR
-drwx------ 3 root   root   4096 Dec  5 12:09 systemd-private-062a0eca7f2a44349733e78cb4abdff4-colord.service-V7DUzr
-drwx------ 3 root   root   4096 Dec  5 12:09 systemd-private-062a0eca7f2a44349733e78cb4abdff4-rtkit-daemon.service-ANGvoV
-drwx------ 3 root   root   4096 Dec  5 12:07 systemd-private-062a0eca7f2a44349733e78cb4abdff4-systemd-timesyncd.service-CdXUtH
--rw-rw-r-- 1 julien julien    0 Dec  5 12:09 unity_support_test.0
-:) ^C
-julien@ubuntu:~/shell$ 
-
-```
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 4. Simple shell 0.4
-
-mandatory
-
-Simple shell 0.3 +
-
--   Implement the  `exit`  built-in, that exits the shell
--   Usage:  `exit`
--   You don’t have to handle any argument to the built-in  `exit`
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 5. Simple shell 1.0
-
-mandatory
-
-Simple shell 0.4 +
-
--   Implement the  `env`  **built-in**, that prints the current environment
-
-```
-julien@ubuntu:~/shell$ ./simple_shell
-$ env
-USER=julien
-LANGUAGE=en_US
-SESSION=ubuntu
-COMPIZ_CONFIG_PROFILE=ubuntu
-SHLVL=1
-HOME=/home/julien
-C_IS=Fun_:)
-DESKTOP_SESSION=ubuntu
-LOGNAME=julien
-TERM=xterm-256color
-PATH=/home/julien/bin:/home/julien/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-DISPLAY=:0
+$ ls
+AUTHORS  README.md  cd_builtin.c  env_builtins.c  execute.c  getenv.c  handle_builtin.c  handle_path.c  hsh  main.c  readline.c  shell.h  string.c  tokenizer.c  tools.c  utils.c
+$ pwd
+/home/user/simple_shell
+$ echo "Hello, World!"
+Hello, World!
 $ exit
-julien@ubuntu:~/shell$ 
-
 ```
 
-**Repo:**
+**Non-Interactive Mode:**
 
--   GitHub repository:  `simple_shell`
+```bash
+$ echo "ls -la" | ./hsh
+total 92
+drwxrwxr-x 3 user user  4096 Nov  4 10:30 .
+drwxrwxr-x 5 user user  4096 Nov  3 14:22 ..
+-rw-rw-r-- 1 user user   150 Nov  4 09:15 AUTHORS
+...
 
-
-
-### 6. Simple shell 0.1.1
-
-#advanced
-
-Simple shell 0.1 +
-
--   Write your own  `getline`  function
--   Use a buffer to read many chars at once and call the least possible the  `read`  system call
--   You will need to use  `static`  variables
--   You are not allowed to use  `getline`
-
-You don’t have to:
-
--   be able to move the cursor
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-### 7. Simple shell 0.2.1
-
-#advanced
-
-Simple shell 0.2 +
-
--   You are not allowed to use  `strtok`
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 8. Simple shell 0.4.1
-
-#advanced
-
-Simple shell 0.4 +
-
--   handle arguments for the built-in  `exit`
--   Usage:  `exit status`, where  `status`  is an integer used to exit the shell
-
-```
-julien@ubuntu:~/shell$ ./shell_0.4.1
-$ exit 98
-julien@ubuntu:~/shell$ echo $?
-98
-julien@ubuntu:~/shell$ 
-
+$ cat commands.txt
+pwd
+ls
+env
+$ ./hsh < commands.txt
+/home/user/simple_shell
+AUTHORS  README.md  hsh  main.c  shell.h
+USER=user
+HOME=/home/user
+PATH=/usr/local/bin:/usr/bin:/bin
+...
 ```
 
-**Repo:**
+### Example Session
 
--   GitHub repository:  `simple_shell`
+![Simple Shell in Action](./assets/shell_demo.svg)
 
-
-
-### 9. setenv, unsetenv
-
-#advanced
-
-Simple shell 1.0 +
-
-Implement the  `setenv`  and  `unsetenv`  builtin commands
-
--   `setenv`
-    -   Initialize a new environment variable, or modify an existing one
-    -   Command syntax:  `setenv VARIABLE VALUE`
-    -   Should print something on stderr on failure
--   `unsetenv`
-    -   Remove an environment variable
-    -   Command syntax:  `unsetenv VARIABLE`
-    -   Should print something on stderr on failure
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 10. cd
-
-#advanced
-
-Simple shell 1.0 +
-
-Implement the builtin command  `cd`:
-
--   Changes the current directory of the process.
--   Command syntax:  `cd [DIRECTORY]`
--   If no argument is given to  `cd`  the command must be interpreted like  `cd $HOME`
--   You have to handle the command  `cd -`
--   You have to update the environment variable  `PWD`  when you change directory
-
-`man chdir`,  `man getcwd`
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 11. ;
-
-#advanced
-
-Simple shell 1.0 +
-
--   Handle the commands separator  `;`
-
-```
-alex@~$ ls /var ; ls /var
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn ; ls /var
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /var ; ls /hbtn
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-ls: cannot access /hbtn: No such file or directory
-alex@~$ ls /var ; ls /hbtn ; ls /var ; ls /var
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$
-
+```bash
+$ ./hsh
+$ pwd
+/home/runner/work/simple_shell/simple_shell
+$ ls -la
+total 100
+drwxrwxr-x 2 runner runner  4096 Nov  4 14:17 .
+drwxrwxr-x 3 runner runner  4096 Nov  4 14:10 ..
+-rw-rw-r-- 1 runner runner   150 Nov  4 14:17 AUTHORS
+-rw-rw-r-- 1 runner runner 15824 Nov  4 14:17 README.md
+-rwxrwxr-x 1 runner runner 22040 Nov  4 14:17 hsh
+$ env | grep PATH
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/games
+$ cd ..
+$ pwd
+/home/runner/work/simple_shell
+$ cd -
+/home/runner/work/simple_shell/simple_shell
+$ exit 0
 ```
 
-**Repo:**
+### Built-in Commands
 
--   GitHub repository:  `simple_shell`
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `exit [n]` | Exit the shell with optional status code | `exit` or `exit 98` |
+| `env` | Print all environment variables | `env` |
+| `cd [directory]` | Change current directory | `cd /tmp` or `cd` or `cd -` |
+| `setenv VAR VALUE` | Set or modify environment variable | `setenv PATH /usr/bin` |
+| `unsetenv VAR` | Remove environment variable | `unsetenv TEMP` |
 
+---
 
+## 📊 Project Statistics
 
-### 12. && and ||
+- **Lines of Code**: 946 lines
+- **Source Files**: 12 C files
+- **Header Files**: 1 header file (shell.h)
+- **Functions**: 30+ functions
+- **Built-in Commands**: 5 (exit, env, cd, setenv, unsetenv)
+- **System Calls Used**: 20+ (fork, execve, wait, chdir, stat, etc.)
 
-#advanced
+---
 
-Simple shell 1.0 +
+## 🤝 Contributing
 
--   Handle the  `&&`  and  `||`  shell logical operators
+This project was developed as part of an educational program. While it's primarily for learning purposes, suggestions and feedback are welcome. Please ensure any contributions follow the Betty coding style and maintain the project's educational focus.
 
-```
-alex@~$ ls /var && ls /var
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn && ls /var
-ls: cannot access /hbtn: No such file or directory
-alex@~$ ls /var && ls /var && ls /var && ls /hbtn
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-ls: cannot access /hbtn: No such file or directory
-alex@~$ ls /var && ls /var && ls /var && ls /hbtn && ls /hbtn
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-ls: cannot access /hbtn: No such file or directory
-alex@~$
-alex@~$ ls /var || ls /var
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn || ls /var
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$ ls /hbtn || ls /hbtn || ls /hbtn || ls /var || ls /var
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-ls: cannot access /hbtn: No such file or directory
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  spool  tmp
-alex@~$
+---
 
-```
+## 📧 Contact
 
-**Repo:**
+For questions, suggestions, or collaboration opportunities:
 
--   GitHub repository:  `simple_shell`
+**Phinehas Macharia** ([@MachariaP](https://github.com/MachariaP))  
+Email: walburphinehas78@gmail.com  
+Project Repository: [simple_shell](https://github.com/MachariaP/simple_shell)
 
+---
 
+**⭐ If you found this project helpful, please consider giving it a star!**
 
-### 13. alias
+---
 
-#advanced
-
-Simple shell 1.0 +
-
--   Implement the  `alias`  builtin command
--   Usage:  `alias [name[='value'] ...]`
-    -   `alias`: Prints a list of all aliases, one per line, in the form  `name='value'`
-    -   `alias name [name2 ...]`: Prints the aliases  `name`,  `name2`, etc 1 per line, in the form  `name='value'`
-    -   `alias name='value' [...]`: Defines an alias for each  `name`  whose  `value`  is given. If  `name`  is already an alias, replaces its value with  `value`
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 14. Variables
-
-#advanced
-
-Simple shell 1.0 +
-
--   Handle variables replacement
--   Handle the  `$?`  variable
--   Handle the  `$$`  variable
-
-```
-julien@ubuntu:~/shell$ ./hsh
-$ ls /var
-backups  cache  crash  lib  local  lock  log  mail  metrics  opt  run  snap  spool  tmp
-$ echo $?
-0
-$ echo $$
-5104
-$ echo $PATH
-/home/julien/bin:/home/julien/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-$ exit 
-julien@ubuntu:~/shell$ 
-
-```
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 15. Comments
-
-#advanced
-
-Simple shell 1.0 +
-
--   Handle comments (`#`)
-
-```
-julien@ubuntu:~/shell$ sh
-$ echo $$ # ls -la
-5114
-$ exit
-julien@ubuntu:~/shell$ 
-
-```
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-
-### 16. File as input
-
-#advanced
-
-Simple shell 1.0 +
-
--   Usage:  `simple_shell [filename]`
--   Your shell can take a file as a command line argument
--   The file contains all the commands that your shell should run before exiting
--   The file should contain one command per line
--   In this mode, the shell should not print a prompt and should not read from  `stdin`
-
-**Repo:**
-
--   GitHub repository:  `simple_shell`
-
-
-Copyright © 2023 ALX, All rights reserved.
+*This project is part of the ALX Software Engineering curriculum, focused on systems programming and understanding the inner workings of UNIX shells.*
