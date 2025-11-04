@@ -233,9 +233,11 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## 10. Created By
 
-**Phinehas Macharia**
+**Phinehas Macharia** ([@MachariaP](https://github.com/MachariaP))
 
 Systems Programmer | Shell Developer | C Enthusiast
+
+Email: walburphinehas78@gmail.com
 
 ---
 
@@ -326,9 +328,9 @@ $ exit 0
 
 ## 📊 Project Statistics
 
-- **Lines of Code**: ~946 lines
-- **Source Files**: 13 C files
-- **Header Files**: 1 header file
+- **Lines of Code**: 946 lines
+- **Source Files**: 12 C files
+- **Header Files**: 1 header file (shell.h)
 - **Functions**: 30+ functions
 - **Built-in Commands**: 5 (exit, env, cd, setenv, unsetenv)
 - **System Calls Used**: 20+ (fork, execve, wait, chdir, stat, etc.)
@@ -345,8 +347,8 @@ This project was developed as part of an educational program. While it's primari
 
 For questions, suggestions, or collaboration opportunities:
 
-**Phinehas Macharia**  
-GitHub: [@MachariaP](https://github.com/MachariaP)  
+**Phinehas Macharia** ([@MachariaP](https://github.com/MachariaP))  
+Email: walburphinehas78@gmail.com  
 Project Repository: [simple_shell](https://github.com/MachariaP/simple_shell)
 
 ---
