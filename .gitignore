@@ -1,0 +1,22 @@
+# Backup files
+*.old.md
+*.bak
+*~
+
+# Compiled object files
+*.o
+*.a
+
+# Temporary files
+/tmp/
+*.tmp
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
